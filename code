@@ -1,0 +1,1931 @@
+#include <stdio.h> 
+
+#include <stdlib.h> 
+
+#include <string.h> 
+
+#include <ctype.h> 
+
+#include <time.h> 
+
+ 
+
+    clock_t start_time, end_time; // Variables to store start and end times 
+
+    double cpu_time_used; // Variable to calculate CPU time used 
+
+ 
+
+// Define structures for dishes 
+
+typedef struct { 
+
+    char name[100]; 
+
+    char flavor[100]; 
+
+    char cuisine[100]; 
+
+    char diet[100]; 
+
+} Dish; 
+
+ 
+
+// Define structures for vertices and edges in a graph 
+
+typedef struct Edge { 
+
+    Dish* dish; 
+
+    struct Edge* next; 
+
+} Edge; 
+
+ 
+
+typedef struct Vertex { 
+
+    char name[100]; 
+
+    Edge* edges; 
+
+    int visited; 
+
+} Vertex; 
+
+ 
+
+// Function to create a new dish 
+
+Dish createDish(char name[100], char flavor[100], char cuisine[100], char diet[100]) { 
+
+    Dish dish; 
+
+    strcpy(dish.name, name); 
+
+    strcpy(dish.flavor, flavor); 
+
+    strcpy(dish.cuisine, cuisine); 
+
+    strcpy(dish.diet, diet); 
+
+    return dish; 
+
+} 
+
+ 
+
+// Function to create a new edge 
+
+Edge* createEdge(Dish* dish) { 
+
+    Edge* edge = (Edge*)malloc(sizeof(Edge)); 
+
+    edge->dish = dish; 
+
+    edge->next = NULL; 
+
+    return edge; 
+
+} 
+
+ 
+
+// Function to create a new vertex 
+
+Vertex* createVertex(char name[100]) { 
+
+    Vertex* vertex = (Vertex*)malloc(sizeof(Vertex)); 
+
+    strcpy(vertex->name, name); 
+
+    vertex->edges = NULL; 
+
+    vertex->visited = 0; 
+
+    return vertex; 
+
+} 
+
+ 
+
+// Function to add an edge to a vertex 
+
+void addEdgeToVertex(Vertex* vertex, Dish* dish) { 
+
+    Edge* newEdge = createEdge(dish); 
+
+    newEdge->next = vertex->edges; 
+
+    vertex->edges = newEdge; 
+
+} 
+
+ 
+
+void BFS(Vertex vertices[], int numVertices, char flavor[100], char cuisine[100], char diet[100]) { 
+
+    for (int i = 0; i < numVertices; i++) { 
+
+        vertices[i].visited = 0; 
+
+    } 
+
+ 
+
+    int found = 0;  // Variable to track if the flavor preference is found 
+
+ 
+
+    for (int i = 0; i < numVertices; i++) { 
+
+        if (strcmp(vertices[i].name, flavor) == 0) { 
+
+            found = 1;  // Flavor preference is found 
+
+            Vertex* flavorVertex = &vertices[i]; 
+
+            flavorVertex->visited = 1; 
+
+ 
+
+            Edge* edge = flavorVertex->edges; 
+
+            while (edge != NULL) { 
+
+                Dish* relatedDish = edge->dish; 
+
+                // Check if the dish matches the cuisine and diet preferences 
+
+                if (strcmp(relatedDish->cuisine, cuisine) == 0 && strcmp(relatedDish->diet, diet) == 0) { 
+
+                    printf("- %s\n", relatedDish->name); 
+
+                } 
+
+                edge = edge->next; 
+
+            } 
+
+        } 
+
+    } 
+
+ 
+
+    if (found== 0) { 
+
+        printf("No recipes found for your preferences.\n"); 
+
+    } 
+
+ 
+
+    end_time = clock(); // Record the end time 
+
+    cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC; // Calculate CPU time used in seconds 
+
+ 
+
+    printf("CPU Time Used: %f seconds\n", cpu_time_used); 
+
+} 
+
+ 
+
+ 
+
+ 
+
+int main() { 
+
+    // Create some dishes 
+
+Dish dishes[] = { 
+
+        {"Spaghetti Bolognese", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"Vegan Pizza", "Spicy", "Italian", "Vegan"}, 
+
+        {"Chocolate Cake", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Lemon Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+        {"Baked Salmon", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Mango Salsa", "Tangy", "Indian", "Vegetarian"}, 
+
+        {"Paneer Tikka", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Pasta", "Spicy", "Italian", "Vegetarian"}, 
+
+        {"Sushi", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Chow Mein", "Tangy", "Chinese", "Vegetarian"}, 
+
+        {"Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Vindaloo", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Butter Chicken", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Lasagna", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"General Tso's Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Gulab Jamun", "Sweet", "Indian", "Vegetarian"}, 
+
+        // Additional Dishes 
+
+        {"Chilli Paneer", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Margherita Pizza", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Hot and Sour Soup", "Tangy", "Chinese", "Vegetarian"}, 
+
+        {"Egg Fried Rice", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Mushroom Manchurian", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Penne alla Vodka", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Kung Pao Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Paneer Butter Masala", "Tangy", "Indian", "Vegetarian"}, 
+
+        {"Lobster Bisque", "Sweet", "Italian", "Non-vegetarian"}, 
+
+        {"Dal Makhani", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Tofu Stir-fry", "Tangy", "Chinese", "Vegan"}, 
+
+        {"Gajar Ka Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+        {"Chicken Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"Veg Biryani", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Fettuccine Alfredo", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Orange Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+        {"Pumpkin Pie", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Vegan Pad Thai", "Tangy", "Chinese", "Vegan"}, 
+
+        {"Vegan Burger", "Spicy", "American", "Vegan"}, 
+
+        {"Vegan Sushi", "Sweet", "Japanese", "Vegan"}, 
+
+ 
+
+        // Spicy Vegetarian Indian 
+
+        {"Aloo Gobi", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Chana Masala", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Baingan Bharta", "Spicy", "Indian", "Vegetarian"}, 
+
+        // Spicy Non-Vegetarian Indian 
+
+        {"Chicken Tikka Masala", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Lamb Vindaloo", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Fish Curry", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        // Spicy Vegan Indian 
+
+        {"Vegan Chana Masala", "Spicy", "Indian", "Vegan"}, 
+
+        {"Vegan Baingan Bharta", "Spicy", "Indian", "Vegan"}, 
+
+        {"Vegan Tofu Tikka", "Spicy", "Indian", "Vegan"}, 
+
+ 
+
+        // Tangy Vegetarian Italian 
+
+        {"Margherita Pizza", "Tangy", "Italian", "Vegetarian"}, 
+
+        {"Penne all'Arrabbiata", "Tangy", "Italian", "Vegetarian"}, 
+
+        {"Bruschetta", "Tangy", "Italian", "Vegetarian"}, 
+
+        // Tangy Non-Vegetarian Italian 
+
+        {"Spaghetti Carbonara", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        {"Chicken Piccata", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        {"Seafood Linguine", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        // Tangy Vegan Italian 
+
+        {"Vegan Bruschetta", "Tangy", "Italian", "Vegan"}, 
+
+        {"Vegan Penne all'Arrabbiata", "Tangy", "Italian", "Vegan"}, 
+
+        {"Vegan Mushroom Risotto", "Tangy", "Italian", "Vegan"}, 
+
+ 
+
+        // Sweet Vegetarian Chinese 
+
+        {"Honey Walnut Shrimp", "Sweet", "Chinese", "Vegetarian"}, 
+
+        {"General Tso's Tofu", "Sweet", "Chinese", "Vegetarian"}, 
+
+        {"Sweet and Sour Vegetables", "Sweet", "Chinese", "Vegetarian"}, 
+
+        // Sweet Non-Vegetarian Chinese 
+
+        {"Sweet and Sour Pork", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Kung Pao Chicken", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Mongolian Beef", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        // Sweet Vegan Chinese 
+
+        {"Vegan Sweet and Sour Tofu", "Sweet", "Chinese", "Vegan"}, 
+
+        {"Vegan Kung Pao Tofu", "Sweet", "Chinese", "Vegan"}, 
+
+        {"Vegan Pineapple Fried Rice", "Sweet", "Chinese", "Vegan"}, 
+
+         
+
+        // Tangy Vegetarian Indian 
+
+{"Chana Chaat", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Paneer Tikka", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Masala Dosa", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Vegetable Biryani", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Lauki Chana Dal", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Tamarind Rice", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Chana Masala", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Aloo Tikki", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Vegetable Pulao", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tamarind Chutney", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Papdi Chaat", "Tangy", "Indian", "Vegetarian"}, 
+
+ 
+
+// Tangy Non-Vegetarian Indian 
+
+{"Chicken Tikka", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Lamb Curry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Fish Tamarind", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Egg Curry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Chicken Biryani", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Mutton Chops", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Keema Paratha", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Butter Chicken", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Spicy Tangy Chicken Wings", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Chicken Kebabs", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Lemon Fish Fry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+ 
+
+// Tangy Vegan Indian 
+
+{"Tangy Tofu Stir-Fry", "Tangy", "Indian", "Vegan"}, 
+
+{"Lemon Rice", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Chickpea Curry", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Tamarind Chutney", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Eggplant Bharta", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Cabbage Sabzi", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Tofu Tikka Masala", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Tomato Rasam", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Potato Curry", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Mango Pickle", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Vegetable Upma", "Tangy", "Indian", "Vegan"}, 
+
+// Sweet Vegetarian Indian 
+
+{"Gulab Jamun", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Rasgulla", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Kheer", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Jalebi", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Badam Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Rice Pudding (Kheer)", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Gajar Ka Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Gulab Jamun (Vegan)", "Sweet", "Indian", "Vegan"}, 
+
+{"Date and Nut Ladoo", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Coconut Ladoo", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Besan Ladoo", "Sweet", "Indian", "Vegetarian"},// Spicy Vegetarian Chinese 
+
+{"Mapo Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Kung Pao Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Lo Mein", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"General Tso's Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Szechuan Eggplant", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Chilli Potato", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Sesame Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Spicy Hot Pot", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Spring Rolls", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Spicy Chinese Cabbage", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Fried Rice", "Spicy", "Chinese", "Vegetarian"}, 
+
+ 
+
+// Spicy Non-Vegetarian Chinese 
+
+{"Kung Pao Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"General Tso's Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Szechuan Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Mongolian Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Sesame Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Orange Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Spicy Shrimp Stir-fry", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Hunan Pork", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Spicy Beef Noodle Soup", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Firecracker Shrimp", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Sichuan Hot Pot", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+ 
+
+// Spicy Vegan Chinese 
+
+{"Vegan Mapo Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Kung Pao Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Hot Pot", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Szechuan Eggplant", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Sesame Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Chinese Vegetable Stir-fry", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Spring Rolls", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Noodles", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Kung Pao Cauliflower", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy General Tso's Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Chow Mein", "Spicy", "Chinese", "Vegan"}, 
+
+ 
+
+// Tangy Vegetarian Chinese 
+
+{"Sweet and Sour Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Vegetable Stir-fry", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Lemon Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Sweet and Sour Mushroom", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Spring Rolls", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Crispy Orange Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Sesame Cauliflower", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Manchurian", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Tofu Noodle Soup", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Chinese Cabbage", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Chow Mein", "Tangy", "Chinese", "Vegetarian"}, 
+
+ 
+
+// Tangy Non-Vegetarian Chinese 
+
+{"Sweet and Sour Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Lemon Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Orange Beef", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Crispy Sweet and Sour Shrimp", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Sweet and Tangy Pork Ribs", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy General Tso's Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Szechuan Shrimp", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Beef and Broccoli", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Shrimp Fried Rice", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Sweet and Sour Duck", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Lemon Garlic Butter Lobster", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+ 
+
+// Tangy Vegan Chinese 
+
+{"Vegan Sweet and Sour Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Orange Cauliflower", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Lemon Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Sweet and Tangy Vegetable Stir-fry", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Spring Rolls", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Sesame Cauliflower", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy General Tso's Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Sweet and Tangy Teriyaki Mushroom", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Crispy Noodles", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Chow Mein", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Sweet and Sour Seitan", "Tangy", "Chinese", "Vegan"}, 
+
+// Sweet Vegetarian Italian 
+
+{"Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Panna Cotta", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Cannoli", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Torta Caprese", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Zeppole", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Struffoli", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Amaretto Biscuits", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Italian Rainbow Cookies", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Affogato", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Chocolate Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Italian Apple Cake", "Sweet", "Italian", "Vegetarian"}, 
+
+// Spicy Vegan Italian 
+
+{"Vegan Spaghetti Puttanesca", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Marinara Pizza", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Arrabbiata Penne", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Eggplant Parmesan", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Vegetable Risotto", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spaghetti Aglio e Olio", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Caprese Salad", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Margherita Pizza", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Mushroom Risotto", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Ratatouille", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Panzanella Salad", "Spicy", "Italian", "Vegan"},// Spicy Non-Vegetarian Italian 
+
+{"Spicy Meatball Sub", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Chicken Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Shrimp Scampi", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Sausage and Peppers", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Beef Ravioli", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Italian Sausage", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Pepperoni Pizza", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Fettuccine Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Carbonara", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Clam Linguine", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Lobster Ravioli", "Spicy", "Italian", "Non-vegetarian"}, 
+
+ 
+
+// Spicy Vegetarian Italian 
+
+{"Arrabbiata Pasta", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Margherita Pizza", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spaghetti Aglio e Olio", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Lasagna", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Rigatoni Puttanesca", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Marinara Penne", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Risotto", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Caprese Salad", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Eggplant Parmesan", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Calzone", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Bruschetta", "Spicy", "Italian", "Vegetarian"}, 
+
+}; 
+
+    int numDishes = sizeof(dishes) / sizeof(Dish); 
+
+ 
+
+    // Create vertices for flavors 
+
+    Vertex flavorVertices[] = { 
+
+        {"Spicy"}, 
+
+        {"Tangy"}, 
+
+        {"Sweet"}, 
+
+    }; 
+
+    int numFlavors = sizeof(flavorVertices) / sizeof(Vertex); 
+
+ 
+
+    // Create vertices for diets 
+
+    Vertex dietVertices[] = { 
+
+        {"Vegan"}, 
+
+        {"Vegetarian"}, 
+
+        {"Non-vegetarian"}, 
+
+    }; 
+
+    int numDiets = sizeof(dietVertices) / sizeof(Vertex); 
+
+ 
+
+    // Create vertices for cuisines 
+
+    Vertex cuisineVertices[] = { 
+
+        {"Indian"}, 
+
+        {"Italian"}, 
+
+        {"Chinese"}, 
+
+    }; 
+
+    int numCuisines = sizeof(cuisineVertices) / sizeof(Vertex); 
+
+ 
+
+    // Create edges between flavors and dishes 
+
+    for (int i = 0; i < numFlavors; i++) { 
+
+        for (int j = 0; j < numDishes; j++) { 
+
+            if (strcmp(flavorVertices[i].name, dishes[j].flavor) == 0) { 
+
+                addEdgeToVertex(&flavorVertices[i], &dishes[j]); 
+
+            } 
+
+        } 
+
+    } 
+
+ 
+
+    // Create edges between diets and dishes 
+
+    for (int i = 0; i < numDiets; i++) { 
+
+        for (int j = 0; j < numDishes; j++) { 
+
+            if (strcmp(dietVertices[i].name, dishes[j].diet) == 0) { 
+
+                addEdgeToVertex(&dietVertices[i], &dishes[j]); 
+
+            } 
+
+        } 
+
+    } 
+
+ 
+
+    // Create edges between cuisines and dishes 
+
+    for (int i = 0; i < numCuisines; i++) { 
+
+        for (int j = 0; j < numDishes; j++) { 
+
+            if (strcmp(cuisineVertices[i].name, dishes[j].cuisine) == 0) { 
+
+                addEdgeToVertex(&cuisineVertices[i], &dishes[j]); 
+
+            } 
+
+        } 
+
+    } 
+
+ 
+
+ int continueSearch = 1; 
+
+ 
+
+    while (continueSearch) { 
+
+        int userFlavorChoice; 
+
+        int userCuisineChoice; 
+
+        int userDietChoice; 
+
+ 
+
+        do { 
+
+            printf("Flavor Preferences:\n"); 
+
+            printf("1. Spicy\n2. Tangy\n3. Sweet\n"); 
+
+            printf("Enter the number corresponding to your flavor preference: "); 
+
+            scanf("%d", &userFlavorChoice); 
+
+ 
+
+            if (userFlavorChoice < 1 || userFlavorChoice > 3) { 
+
+                printf("Invalid choice. Please select a valid option.\n"); 
+
+            } 
+
+        } while (userFlavorChoice < 1 || userFlavorChoice > 3); 
+
+ 
+
+        do { 
+
+            printf("Cuisine Preferences:\n"); 
+
+            printf("1. Indian\n2. Italian\n3. Chinese\n"); 
+
+            printf("Enter the number corresponding to your cuisine preference: "); 
+
+            scanf("%d", &userCuisineChoice); 
+
+ 
+
+            if (userCuisineChoice < 1 || userCuisineChoice > 3) { 
+
+                printf("Invalid choice. Please select a valid option.\n"); 
+
+            } 
+
+        } while (userCuisineChoice < 1 || userCuisineChoice > 3); 
+
+ 
+
+        do { 
+
+            printf("Diet Preferences:\n"); 
+
+            printf("1. Vegan\n2. Vegetarian\n3. Non-vegetarian\n"); 
+
+            printf("Enter the number corresponding to your diet preference: "); 
+
+            scanf("%d", &userDietChoice); 
+
+ 
+
+            if (userDietChoice < 1 || userDietChoice > 3) { 
+
+                printf("Invalid choice. Please select a valid option.\n"); 
+
+            } 
+
+        } while (userDietChoice < 1 || userDietChoice > 3); 
+
+ 
+
+        char* flavorOptions[] = { "Spicy", "Tangy", "Sweet" }; 
+
+        char* cuisineOptions[] = { "Indian", "Italian", "Chinese" }; 
+
+        char* dietOptions[] = { "Vegan", "Vegetarian", "Non-vegetarian" }; 
+
+ 
+
+        char userFlavor[100]; 
+
+        char userCuisine[100]; 
+
+        char userDiet[100]; 
+
+ 
+
+        strcpy(userFlavor, flavorOptions[userFlavorChoice - 1]); 
+
+        strcpy(userCuisine, cuisineOptions[userCuisineChoice - 1]); 
+
+        strcpy(userDiet, dietOptions[userDietChoice - 1]); 
+
+ 
+
+        // Recommend dishes based on user preferences using BFS 
+
+        int found = 0; 
+
+        BFS(flavorVertices, numFlavors, userFlavor, userCuisine, userDiet); 
+
+ 
+
+        for (int i = 0; i < numFlavors; i++) { 
+
+            if (strcmp(flavorVertices[i].name, userFlavor) == 0) { 
+
+                found = 1; 
+
+                break; 
+
+            } 
+
+        } 
+
+ 
+
+        if (!found) { 
+
+            printf("No recipes found for your preferences.\n"); 
+
+        } 
+
+ 
+
+        char choice; 
+
+        printf("Do you want to continue (Y/N)? "); 
+
+        scanf(" %c", &choice); 
+
+        if (choice != 'Y' && choice != 'y') { 
+
+            continueSearch = 0; 
+
+        } 
+
+    } 
+
+ 
+
+    printf("Thank you for using our recipe recommendation system!\n"); 
+
+     
+
+         // Free memory for edges in each vertex 
+
+    for (int i = 0; i < numFlavors; i++) { 
+
+        Edge* edge = flavorVertices[i].edges; 
+
+        while (edge != NULL) { 
+
+            Edge* nextEdge = edge->next; 
+
+            free(edge); 
+
+            edge = nextEdge; 
+
+        } 
+
+    } 
+
+ 
+
+ 
+
+    printf("Memory freed.\n"); 
+
+ 
+
+    return 0; 
+
+} 
+
+[10:06 PM, 10/15/2023] kalyani: #include <stdio.h> 
+
+#include <stdlib.h> 
+
+#include <string.h> 
+
+#include <time.h>  
+
+ 
+
+clock_t start_time, end_time; // Variables to store start and end times 
+
+    double cpu_time_used; // Variable to calculate CPU time used 
+
+ 
+
+// Define structures for dishes 
+
+typedef struct { 
+
+    char name[100]; 
+
+    char flavor[100]; 
+
+    char cuisine[100]; 
+
+    char diet[100]; 
+
+} Dish; 
+
+ 
+
+// Define a structure for a binary tree node 
+
+typedef struct TreeNode { 
+
+    Dish dish; 
+
+    struct TreeNode* left; 
+
+    struct TreeNode* right; 
+
+} TreeNode; 
+
+ 
+
+// Function to create a new dish 
+
+TreeNode* createDishNode(Dish dish) { 
+
+    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode)); 
+
+    newNode->dish = dish; 
+
+    newNode->left = NULL; 
+
+    newNode->right = NULL; 
+
+    return newNode; 
+
+} 
+
+ 
+
+// Function to insert a dish into the tree 
+
+TreeNode* insert(TreeNode* root, Dish dish) { 
+
+    if (root == NULL) { 
+
+        return createDishNode(dish); 
+
+    } 
+
+ 
+
+    // Compare dish names to determine the insertion point 
+
+    int cmp = strcmp(dish.name, root->dish.name); 
+
+    if (cmp < 0) { 
+
+        root->left = insert(root->left, dish); 
+
+    } else if (cmp > 0) { 
+
+        root->right = insert(root->right, dish); 
+
+    } 
+
+ 
+
+    return root; 
+
+} 
+
+ 
+
+// Function to search for dishes based on user preferences 
+
+void searchDishes(TreeNode* root, char flavor[100], char cuisine[100], char diet[100], int *recommendedCount) { 
+
+    if (root == NULL) { 
+
+        return; 
+
+    } 
+
+ 
+
+    // Check if the dish matches the user preferences 
+
+    if (strcmp(root->dish.flavor, flavor) == 0 && 
+
+        strcmp(root->dish.cuisine, cuisine) == 0 && 
+
+        strcmp(root->dish.diet, diet) == 0) { 
+
+        (*recommendedCount)++; 
+
+        if (*recommendedCount == 1) { 
+
+            printf("Recommended Dishes for %s flavor in %s cuisine, %s diet:\n", flavor, cuisine, diet); 
+
+        } 
+
+        printf("- %s\n", root->dish.name); 
+
+    } 
+
+ 
+
+    // Recursively search left and right subtrees 
+
+    searchDishes(root->left, flavor, cuisine, diet, recommendedCount); 
+
+    searchDishes(root->right, flavor, cuisine, diet, recommendedCount); 
+
+} 
+
+ 
+
+void freeTree(TreeNode* root) { 
+
+    if (root == NULL) { 
+
+        return; 
+
+    } 
+
+    // Recursively free left and right subtrees 
+
+    freeTree(root->left); 
+
+    freeTree(root->right); 
+
+    // Free the current node 
+
+    free(root); 
+
+} 
+
+ 
+
+int main() { 
+
+    TreeNode* root = NULL; 
+
+ 
+
+    Dish dishes[] = { 
+
+        {"Spaghetti Bolognese", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"Vegan Pizza", "Spicy", "Italian", "Vegan"}, 
+
+        {"Chocolate Cake", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Lemon Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+        {"Baked Salmon", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Mango Salsa", "Tangy", "Indian", "Vegetarian"}, 
+
+        {"Paneer Tikka", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Pasta", "Spicy", "Italian", "Vegetarian"}, 
+
+        {"Sushi", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Chow Mein", "Tangy", "Chinese", "Vegetarian"}, 
+
+        {"Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Vindaloo", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Butter Chicken", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Lasagna", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"General Tso's Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Gulab Jamun", "Sweet", "Indian", "Vegetarian"}, 
+
+        // Additional Dishes 
+
+        {"Chilli Paneer", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Margherita Pizza", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Hot and Sour Soup", "Tangy", "Chinese", "Vegetarian"}, 
+
+        {"Egg Fried Rice", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Mushroom Manchurian", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Penne alla Vodka", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Kung Pao Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+        {"Paneer Butter Masala", "Tangy", "Indian", "Vegetarian"}, 
+
+        {"Lobster Bisque", "Sweet", "Italian", "Non-vegetarian"}, 
+
+        {"Dal Makhani", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Tofu Stir-fry", "Tangy", "Chinese", "Vegan"}, 
+
+        {"Gajar Ka Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+        {"Chicken Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+        {"Veg Biryani", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Fettuccine Alfredo", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Orange Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+        {"Pumpkin Pie", "Sweet", "Italian", "Vegetarian"}, 
+
+        {"Vegan Pad Thai", "Tangy", "Chinese", "Vegan"}, 
+
+        {"Vegan Burger", "Spicy", "American", "Vegan"}, 
+
+        {"Vegan Sushi", "Sweet", "Japanese", "Vegan"}, 
+
+ 
+
+        // Spicy Vegetarian Indian 
+
+        {"Aloo Gobi", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Chana Masala", "Spicy", "Indian", "Vegetarian"}, 
+
+        {"Baingan Bharta", "Spicy", "Indian", "Vegetarian"}, 
+
+        // Spicy Non-Vegetarian Indian 
+
+        {"Chicken Tikka Masala", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Lamb Vindaloo", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        {"Fish Curry", "Spicy", "Indian", "Non-vegetarian"}, 
+
+        // Spicy Vegan Indian 
+
+        {"Vegan Chana Masala", "Spicy", "Indian", "Vegan"}, 
+
+        {"Vegan Baingan Bharta", "Spicy", "Indian", "Vegan"}, 
+
+        {"Vegan Tofu Tikka", "Spicy", "Indian", "Vegan"}, 
+
+ 
+
+        // Tangy Vegetarian Italian 
+
+        {"Margherita Pizza", "Tangy", "Italian", "Vegetarian"}, 
+
+        {"Penne all'Arrabbiata", "Tangy", "Italian", "Vegetarian"}, 
+
+        {"Bruschetta", "Tangy", "Italian", "Vegetarian"}, 
+
+        // Tangy Non-Vegetarian Italian 
+
+        {"Spaghetti Carbonara", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        {"Chicken Piccata", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        {"Seafood Linguine", "Tangy", "Italian", "Non-vegetarian"}, 
+
+        // Tangy Vegan Italian 
+
+        {"Vegan Bruschetta", "Tangy", "Italian", "Vegan"}, 
+
+        {"Vegan Penne all'Arrabbiata", "Tangy", "Italian", "Vegan"}, 
+
+        {"Vegan Mushroom Risotto", "Tangy", "Italian", "Vegan"}, 
+
+ 
+
+        // Sweet Vegetarian Chinese 
+
+        {"Honey Walnut Shrimp", "Sweet", "Chinese", "Vegetarian"}, 
+
+        {"General Tso's Tofu", "Sweet", "Chinese", "Vegetarian"}, 
+
+        {"Sweet and Sour Vegetables", "Sweet", "Chinese", "Vegetarian"}, 
+
+        // Sweet Non-Vegetarian Chinese 
+
+        {"Sweet and Sour Pork", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Kung Pao Chicken", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        {"Mongolian Beef", "Sweet", "Chinese", "Non-vegetarian"}, 
+
+        // Sweet Vegan Chinese 
+
+        {"Vegan Sweet and Sour Tofu", "Sweet", "Chinese", "Vegan"}, 
+
+        {"Vegan Kung Pao Tofu", "Sweet", "Chinese", "Vegan"}, 
+
+        {"Vegan Pineapple Fried Rice", "Sweet", "Chinese", "Vegan"}, 
+
+         
+
+        // Tangy Vegetarian Indian 
+
+{"Chana Chaat", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Paneer Tikka", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Masala Dosa", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Vegetable Biryani", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Lauki Chana Dal", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Tamarind Rice", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Chana Masala", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Aloo Tikki", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Vegetable Pulao", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tamarind Chutney", "Tangy", "Indian", "Vegetarian"}, 
+
+{"Tangy Papdi Chaat", "Tangy", "Indian", "Vegetarian"}, 
+
+ 
+
+// Tangy Non-Vegetarian Indian 
+
+{"Chicken Tikka", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Lamb Curry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Fish Tamarind", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Egg Curry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Chicken Biryani", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Mutton Chops", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Keema Paratha", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Butter Chicken", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Spicy Tangy Chicken Wings", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Tangy Chicken Kebabs", "Tangy", "Indian", "Non-vegetarian"}, 
+
+{"Lemon Fish Fry", "Tangy", "Indian", "Non-vegetarian"}, 
+
+ 
+
+// Tangy Vegan Indian 
+
+{"Tangy Tofu Stir-Fry", "Tangy", "Indian", "Vegan"}, 
+
+{"Lemon Rice", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Chickpea Curry", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Tamarind Chutney", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Eggplant Bharta", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Cabbage Sabzi", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Tofu Tikka Masala", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Tomato Rasam", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Potato Curry", "Tangy", "Indian", "Vegan"}, 
+
+{"Vegan Mango Pickle", "Tangy", "Indian", "Vegan"}, 
+
+{"Tangy Vegetable Upma", "Tangy", "Indian", "Vegan"}, 
+
+// Sweet Vegetarian Indian 
+
+{"Gulab Jamun", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Rasgulla", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Kheer", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Jalebi", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Badam Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Rice Pudding (Kheer)", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Gajar Ka Halwa", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Gulab Jamun (Vegan)", "Sweet", "Indian", "Vegan"}, 
+
+{"Date and Nut Ladoo", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Coconut Ladoo", "Sweet", "Indian", "Vegetarian"}, 
+
+{"Besan Ladoo", "Sweet", "Indian", "Vegetarian"},// Spicy Vegetarian Chinese 
+
+{"Mapo Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Kung Pao Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Lo Mein", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"General Tso's Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Szechuan Eggplant", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Chilli Potato", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Sesame Tofu", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Spicy Hot Pot", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Spring Rolls", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Spicy Chinese Cabbage", "Spicy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Fried Rice", "Spicy", "Chinese", "Vegetarian"}, 
+
+ 
+
+// Spicy Non-Vegetarian Chinese 
+
+{"Kung Pao Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"General Tso's Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Szechuan Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Mongolian Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Sesame Chicken", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Orange Beef", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Spicy Shrimp Stir-fry", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Hunan Pork", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Spicy Beef Noodle Soup", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Firecracker Shrimp", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+{"Sichuan Hot Pot", "Spicy", "Chinese", "Non-vegetarian"}, 
+
+ 
+
+// Spicy Vegan Chinese 
+
+{"Vegan Mapo Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Kung Pao Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Hot Pot", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Szechuan Eggplant", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Sesame Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Chinese Vegetable Stir-fry", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Spring Rolls", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Noodles", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Kung Pao Cauliflower", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy General Tso's Tofu", "Spicy", "Chinese", "Vegan"}, 
+
+{"Vegan Spicy Chow Mein", "Spicy", "Chinese", "Vegan"}, 
+
+ 
+
+// Tangy Vegetarian Chinese 
+
+{"Sweet and Sour Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Vegetable Stir-fry", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Lemon Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Sweet and Sour Mushroom", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Spring Rolls", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Crispy Orange Tofu", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Sesame Cauliflower", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Vegetable Manchurian", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Tofu Noodle Soup", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Chinese Cabbage", "Tangy", "Chinese", "Vegetarian"}, 
+
+{"Tangy Chow Mein", "Tangy", "Chinese", "Vegetarian"}, 
+
+ 
+
+// Tangy Non-Vegetarian Chinese 
+
+{"Sweet and Sour Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Lemon Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Orange Beef", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Crispy Sweet and Sour Shrimp", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Sweet and Tangy Pork Ribs", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy General Tso's Chicken", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Szechuan Shrimp", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Beef and Broccoli", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Shrimp Fried Rice", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Sweet and Sour Duck", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+{"Tangy Lemon Garlic Butter Lobster", "Tangy", "Chinese", "Non-vegetarian"}, 
+
+ 
+
+// Tangy Vegan Chinese 
+
+{"Vegan Sweet and Sour Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Orange Cauliflower", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Lemon Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Sweet and Tangy Vegetable Stir-fry", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Spring Rolls", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Sesame Cauliflower", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy General Tso's Tofu", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Sweet and Tangy Teriyaki Mushroom", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Crispy Noodles", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Chow Mein", "Tangy", "Chinese", "Vegan"}, 
+
+{"Vegan Tangy Sweet and Sour Seitan", "Tangy", "Chinese", "Vegan"}, 
+
+// Sweet Vegetarian Italian 
+
+{"Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Panna Cotta", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Cannoli", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Torta Caprese", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Zeppole", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Struffoli", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Amaretto Biscuits", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Italian Rainbow Cookies", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Affogato", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Chocolate Tiramisu", "Sweet", "Italian", "Vegetarian"}, 
+
+{"Italian Apple Cake", "Sweet", "Italian", "Vegetarian"}, 
+
+// Spicy Vegan Italian 
+
+{"Vegan Spaghetti Puttanesca", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Marinara Pizza", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Arrabbiata Penne", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Eggplant Parmesan", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Vegetable Risotto", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spaghetti Aglio e Olio", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Caprese Salad", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Margherita Pizza", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Mushroom Risotto", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Ratatouille", "Spicy", "Italian", "Vegan"}, 
+
+{"Vegan Spicy Panzanella Salad", "Spicy", "Italian", "Vegan"},// Spicy Non-Vegetarian Italian 
+
+{"Spicy Meatball Sub", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Chicken Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Shrimp Scampi", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Sausage and Peppers", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Beef Ravioli", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Italian Sausage", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Pepperoni Pizza", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Fettuccine Alfredo", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Carbonara", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Clam Linguine", "Spicy", "Italian", "Non-vegetarian"}, 
+
+{"Spicy Lobster Ravioli", "Spicy", "Italian", "Non-vegetarian"}, 
+
+ 
+
+// Spicy Vegetarian Italian 
+
+{"Arrabbiata Pasta", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Margherita Pizza", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spaghetti Aglio e Olio", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Lasagna", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Rigatoni Puttanesca", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Marinara Penne", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Risotto", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Caprese Salad", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Eggplant Parmesan", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Vegetable Calzone", "Spicy", "Italian", "Vegetarian"}, 
+
+{"Spicy Bruschetta", "Spicy", "Italian", "Vegetarian"}, 
+
+}; 
+
+    int numDishes = sizeof(dishes) / sizeof(Dish); 
+
+ 
+
+    for (int i = 0; i < numDishes; i++) { 
+
+        root = insert(root, dishes[i]); 
+
+    } 
+
+ 
+
+    int continueSearch = 1; 
+
+ 
+
+    while (continueSearch) { 
+
+        char userFlavor[100]; 
+
+        char userCuisine[100]; 
+
+        char userDiet[100]; 
+
+        int recommendedCount = 0; 
+
+ 
+
+        // Prompt the user for input and validate it 
+
+        int validInput = 0; 
+
+        while (!validInput) { 
+
+            printf("Flavor Preferences:\n"); 
+
+            printf("1. Spicy\n2. Tangy\n3. Sweet\n"); 
+
+            printf("Enter the number corresponding to your flavor preference: "); 
+
+            int userFlavorChoice; 
+
+            if (scanf("%d", &userFlavorChoice) == 1) { 
+
+                if (userFlavorChoice >= 1 && userFlavorChoice <= 3) { 
+
+                    switch (userFlavorChoice) { 
+
+                        case 1: 
+
+                            strcpy(userFlavor, "Spicy"); 
+
+                            break; 
+
+                        case 2: 
+
+                            strcpy(userFlavor, "Tangy"); 
+
+                            break; 
+
+                        case 3: 
+
+                            strcpy(userFlavor, "Sweet"); 
+
+                            break; 
+
+                    } 
+
+                    validInput = 1; 
+
+                } else { 
+
+                    printf("Invalid choice. Please select a valid option.\n"); 
+
+                } 
+
+            } else { 
+
+                printf("Invalid input. Please enter a number.\n"); 
+
+                while (getchar() != '\n'); // Clear input buffer 
+
+            } 
+
+        } 
+
+ 
+
+        validInput = 0; 
+
+        while (!validInput) { 
+
+            printf("Cuisine Preferences:\n"); 
+
+            printf("1. Indian\n2. Italian\n3. Chinese\n"); 
+
+            printf("Enter the number corresponding to your cuisine preference: "); 
+
+            int userCuisineChoice; 
+
+            if (scanf("%d", &userCuisineChoice) == 1) { 
+
+                if (userCuisineChoice >= 1 && userCuisineChoice <= 3) { 
+
+                    switch (userCuisineChoice) { 
+
+                        case 1: 
+
+                            strcpy(userCuisine, "Indian"); 
+
+                            break; 
+
+                        case 2: 
+
+                            strcpy(userCuisine, "Italian"); 
+
+                            break; 
+
+                        case 3: 
+
+                            strcpy(userCuisine, "Chinese"); 
+
+                            break; 
+
+                    } 
+
+                    validInput = 1; 
+
+                } else { 
+
+                    printf("Invalid choice. Please select a valid option.\n"); 
+
+                } 
+
+            } else { 
+
+                printf("Invalid input. Please enter a number.\n"); 
+
+                while (getchar() != '\n'); // Clear input buffer 
+
+            } 
+
+        } 
+
+ 
+
+        validInput = 0; 
+
+        while (!validInput) { 
+
+            printf("Diet Preferences:\n"); 
+
+            printf("1. Vegan\n2. Vegetarian\n3. Non-vegetarian\n"); 
+
+            printf("Enter the number corresponding to your diet preference: "); 
+
+            int userDietChoice; 
+
+            if (scanf("%d", &userDietChoice) == 1) { 
+
+                if (userDietChoice >= 1 && userDietChoice <= 3) { 
+
+                    switch (userDietChoice) { 
+
+                        case 1: 
+
+                            strcpy(userDiet, "Vegan"); 
+
+                            break; 
+
+                        case 2: 
+
+                            strcpy(userDiet, "Vegetarian"); 
+
+                            break; 
+
+                        case 3: 
+
+                            strcpy(userDiet, "Non-vegetarian"); 
+
+                            break; 
+
+                    } 
+
+                    validInput = 1; 
+
+                } else { 
+
+                    printf("Invalid choice. Please select a valid option.\n"); 
+
+                } 
+
+            } else { 
+
+                printf("Invalid input. Please enter a number.\n"); 
+
+                while (getchar() != '\n'); // Clear input buffer 
+
+            } 
+
+        } 
+
+         
+
+        
+
+            searchDishes(root, userFlavor, userCuisine, userDiet, &recommendedCount); 
+
+             
+
+                end_time = clock(); // Record the end time 
+
+    cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC; // Calculate CPU time used in seconds 
+
+ 
+
+    if (recommendedCount > 0) { 
+
+        printf("CPU Time Used: %f seconds\n", cpu_time_used); 
+
+    } else { 
+
+        printf("No recipes found for your preferences.\n"); 
+
+    } 
+
+ 
+
+        char choice; 
+
+        printf("Do you want to continue (Y/N)? "); 
+
+        scanf(" %c", &choice); 
+
+        if (choice != 'Y' && choice != 'y') { 
+
+            continueSearch = 0; 
+
+        } 
+
+    } 
+
+ 
+
+    printf("Thank you for using our recipe recommendation system!\n"); 
+
+    freeTree(root); 
+
+    printf("Memory freed!"); 
+
+ 
+
+    return 0; 
+
+} 
